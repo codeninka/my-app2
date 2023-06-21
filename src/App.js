@@ -6,23 +6,23 @@ import './App.css';
 
 
 function App() {
-  const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  //const [result, setResult] = useState(null);
+  //const [loading, setLoading] = useState(false);
+  //const [error, setError] = useState("");
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
 
-  const getData = async (input = prompt) => {
-    try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/openai?prompt=${input}`);
-      const aiResponse = await response.json();
-      setResult(aiResponse);
-      setLoading(false);
-      setError("");
-    } catch (e) {
-      setError("Oops")
-    }
-  };
+  //const getData = async (input = prompt) => {
+    //try {
+      //const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/openai?prompt=${input}`);
+      //const aiResponse = await response.json();
+      //setResult(aiResponse);
+      //setLoading(false);
+      //setError("");
+    //} //catch (e) {
+      //setError("Oops")
+    //}
+  //};
 
 
   const handleSend = (event) => {
