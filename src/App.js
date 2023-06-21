@@ -38,7 +38,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h2>Chat with AI</h2>
+        <h2>Chat with AIplannuh</h2>
         <div className="chatbox">
           {messages.map((message, index) =>
             <p key={index} className={message.sender}>{message.text}</p>
