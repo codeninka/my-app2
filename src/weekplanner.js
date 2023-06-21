@@ -1,62 +1,50 @@
-import React, { useState } from 'react';
-import './App.css';
+require("dotenv").config();
+const { Configuration, OpenAIApi } = require("openai");
 
+const configuration = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
+const openai = new OpenAIApi(configuration);
 
-
-
-function App() {
-  const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
-
-  const getData = async (input = prompt) => {
-    try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/openai?prompt=${input}`);
-      const aiResponse = await response.json();
-      setResult(aiResponse);
-      setLoading(false);
-      setError("");
-    } catch (e) {
-      setError("Oops")
-    }
-  };
-
-
-  const handleSend = (event) => {
-    event.preventDefault();
-    setMessages([...messages, { text: input, sender: 'user' }]);
-    setInput('');
+exports.handler = async (event, context) => {
+  // Only allow GET requests
+  if (event.httpMethod !== "GET") {
+    return { statusCode: 405, body: "Method Not Allowed" };
   }
 
-  const handleChange = (event) => {
-    setInput(event.target.value);
+  const prompt = event.queryStringParameters.prompt;
+
+  try {
+    const response = await openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      messages: [{
+        role: "user",
+        content: `You are the expert week planner, a unique individual who has unlocked the ability to detect 
+                amount of time to invest a particular task ,and arrange those tasks daily through creating optimized daily plans.
+                 You are a hero and an inspiration for millions.\n 
+                You adress people as your students. You always reply in an epic, and badass way. 
+                You go straight to the point, your replies are under 500 characters.\n
+                Here is the task list: ${prompt}\n`,
+      }],
+    });
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify(response.data.choices[0].message.content),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    };
+
+  } catch (error) {
+    console.error(error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Failed to connect to OpenAI' }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    };
   }
-
-  return (
-    <div className="App">
-      <header className="App-header">
-        <h2>Chat with AI</h2>
-        <div className="chatbox">
-          {messages.map((message, index) =>
-            <p key={index} className={message.sender}>{message.text}</p>
-          )}
-        </div>
-        <form onSubmit={handleSend}>
-          <input 
-            type="text" 
-            value={input} 
-            onChange={handleChange}
-            placeholder="Type your message..."
-            required 
-          />
-          <button type="submit">Send</button>
-        </form>
-      </header>
-    </div>
-  );
-}
-
-export default App;
+};
